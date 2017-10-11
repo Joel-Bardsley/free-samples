@@ -48,8 +48,12 @@ install.get('/auth', function(req, res){
 });
 
 function getShopName(req, res, next) {
-  req.shopName = req.query.shop.split(".myshopify.com").join("");
-  next();
+  if (!req.query.shop) {
+    res.status(400).json({error: "Problem retrieving shop details"});
+  } else {
+    req.shopName = req.query.shop.split(".myshopify.com").join("");
+    next();
+  }
 }
 
 module.exports = install;

@@ -116,25 +116,18 @@ function formatOrder(req, res, next) {
     
     
     req.order_data = {
-      "order": {
+      "draft_order": {
         "note": "Fabric samples only",
-        "send_receipt": true,
-        "discount_codes": [
-          {
-            "code": "Free Samples"
-          }
-        ],
         "line_items": lineItems,
-        "shipping_lines": [
-          {
-            "title": "Free shipping",
-            "price": "0.00"
-          }
-        ],
+        "shipping_line": {
+          "title": "Free shipping",
+          "price": "0.00",
+          "custom": true
+        },
         "customer": {
           "id": req.customer.id
         },
-        "shipping_address": address
+        "use_customer_default_address": true
       }
     };
     console.log("Order formatted");
@@ -147,7 +140,7 @@ function formatOrder(req, res, next) {
 function createOrder(req, res, next) {
   var Shopify = new shopifyAPI(req.shopifyConfig);
   
-  Shopify.post('/admin/orders.json', req.order_data, function(err, data, headers){
+  Shopify.post('/admin/draft_orders.json', req.order_data, function(err, data, headers){
     if(err) {
       res.status(400).json({error: "Error creating order"});
     } else {
