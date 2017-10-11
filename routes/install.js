@@ -49,10 +49,10 @@ install.get('/auth', function(req, res){
 
 function getShopName(req, res, next) {
   if (!req.query.shop) {
-    res.status(400).json({error: "Problem retrieving shop details"});
+    res.status(400).json({error: "Could not retrieve shop details."});
   } else {
     req.shopName = req.query.shop.split(".myshopify.com").join("");
-    next();
+    next(); 
   }
 }
 
