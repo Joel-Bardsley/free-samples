@@ -1,7 +1,6 @@
 var sample = require('express').Router();
 var mongoose = require('mongoose');
 var shopifyAPI = require('shopify-node-api');
-var Customer = require('../models/customer');
 var Shop = require('../models/shop');
 
 
@@ -12,17 +11,13 @@ sample.post('/tag/:action', [formatCustomerTags, updateCustomerTags], function(r
 });
 
 
-sample.post('/order', [formatOrder, createOrder, createCustomer, formatFinalCustomerTags, updateCustomerTags, getOrder], function(req, res){
+sample.post('/order', [formatOrder, createOrder, formatFinalCustomerTags, updateCustomerTags, getOrder], function(req, res){
   res.json({success: "Order completed!", order: req.orderUrl});
 });
 
 
-
-
-
-
 function getShopifyConfig(req, res, next) {
-  var shopName = req.query.shop.split(".myshopify.com").join("");
+  var shopName = req.query.shop.replace('.myshopify.com', '');
   
   Shop.findOne({'name': shopName}, function (err, shop) {
     if (err) {
@@ -84,9 +79,6 @@ function formatCustomerTags(req, res, next) {
 }
 
 
-
-
-
 function formatOrder(req, res, next) {
   
   var address = req.customer.addresses[0];
@@ -143,7 +135,6 @@ function formatOrder(req, res, next) {
 }
 
 
-
 function createOrder(req, res, next) {
   var Shopify = new shopifyAPI(req.shopifyConfig);
   
@@ -156,32 +147,6 @@ function createOrder(req, res, next) {
     }
   });
 }
-
-
-
-function createCustomer(req, res, next) {
-  
-  var customerID = req.customer.id;
-  var customerName = req.customer.first_name + " " + req.customer.last_name;
-  var orderID = req.orderID;
-  
-  var customerData = {
-    customer_id: customerID,
-    name: customerName,
-    order_id: orderID,
-    order_date: new Date()
-  };
-  
-  Customer.create(customerData, function(err, record) {
-    if (err) {
-      res.status(400).json({error: "Error saving customer to database"});
-    } else {
-      console.log("Customer saved to database", record);
-      next();
-    }
-  });
-}
-
 
 function formatFinalCustomerTags(req, res, next) {
   // Get all customer tags
@@ -243,10 +208,5 @@ function getOrder(req, res, next) {
     });
   }
 }
-
-
-
-
-
 
 module.exports = sample;

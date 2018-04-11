@@ -51,7 +51,7 @@ function getShopName(req, res, next) {
   if (!req.query.shop) {
     res.status(400).json({error: "Could not retrieve shop details."});
   } else {
-    req.shopName = req.query.shop.split(".myshopify.com").join("");
+    req.shopName = req.query.shop.replace('.myshopify.com', '');
     next(); 
   }
 }
